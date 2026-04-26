@@ -1,45 +1,84 @@
 <!DOCTYPE html>
 <html lang="en-us">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Unity Web Player | RandomNoiseGenerator</title>
-  </head>
-  <body style="text-align: center; padding: 0; border: 0; margin: 0;">
-    <canvas id="unity-canvas" width=960 height=600 tabindex="-1" style="width: 960px; height: 600px; background: #231F20"></canvas>
-    <script src="Build/RandomNoiseGenerator_webgl.loader.js"></script>
-    <script>
-      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        // Mobile device style: fill the whole browser client area with the game canvas:
-        var meta = document.createElement('meta');
-        meta.name = 'viewport';
-        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
-        document.getElementsByTagName('head')[0].appendChild(meta);
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>RandomNoiseGenerator</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        var canvas = document.querySelector("#unity-canvas");
-        canvas.style.width = "100%";
-        canvas.style.height = "100%";
-        canvas.style.position = "fixed";
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      position: fixed;          /* prevents iOS rubber-band scroll */
+      background: #231f20;
+    }
 
-        document.body.style.textAlign = "left";
+    #unity-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 
-      }
+    #unity-canvas {
+      display: block;
+      width: 100%; height: 100%;
+      touch-action: none;        /* prevents browser from eating touch events */
+      outline: none;
+    }
 
-      createUnityInstance(document.querySelector("#unity-canvas"), {
-        arguments: [],
-        dataUrl: "Build/RandomNoiseGenerator_webgl.data.br",
-        frameworkUrl: "Build/RandomNoiseGenerator_webgl.framework.js.br",
-        codeUrl: "Build/RandomNoiseGenerator_webgl.wasm.br",
-        streamingAssetsUrl: "StreamingAssets",
-        companyName: "DefaultCompany",
-        productName: "RandomNoiseGenerator",
-        productVersion: "1.0",
-        // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
-        // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
-      }).then((unityInstance) => {
-      }).catch((message) => {
-        alert(message);
+    #unity-loading-bar {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center; color: #e0e0e0;
+      font-family: -apple-system, Arial, sans-serif; font-size: 14px;
+    }
+
+    #unity-progress-bar-empty {
+      width: 240px; height: 6px;
+      background: rgba(255,255,255,0.2); border-radius: 3px; margin-top: 12px;
+    }
+
+    #unity-progress-bar-full {
+      height: 100%; background: #4a8fd4; border-radius: 3px;
+      width: 0%; transition: width 0.15s ease;
+    }
+  </style>
+</head>
+<body>
+  <div id="unity-container">
+    <canvas id="unity-canvas" tabindex="-1"></canvas>
+    <div id="unity-loading-bar">
+      <div>Loading…</div>
+      <div id="unity-progress-bar-empty">
+        <div id="unity-progress-bar-full"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var buildUrl = "Build";
+    var config = {
+      dataUrl:            buildUrl + "/RandomNoiseGenerator.data",
+      frameworkUrl:       buildUrl + "/RandomNoiseGenerator.framework.js",
+      codeUrl:            buildUrl + "/RandomNoiseGenerator.wasm",
+      streamingAssetsUrl: "StreamingAssets",
+      companyName:        "DefaultCompany",
+      productName:        "RandomNoiseGenerator",
+      productVersion:     "1.0",
+    };
+    var canvas      = document.querySelector("#unity-canvas");
+    var loadingBar  = document.querySelector("#unity-loading-bar");
+    var progressBar = document.querySelector("#unity-progress-bar-full");
+    var script      = document.createElement("script");
+    script.src      = buildUrl + "/RandomNoiseGenerator.loader.js";
+    script.onload   = function() {
+      createUnityInstance(canvas, config, function(p) {
+        progressBar.style.width = (100 * p) + "%";
+      }).then(function() {
+        loadingBar.style.display = "none";
+      }).catch(function(msg) {
+        alert(msg);
       });
-    </script>
-  </body>
+    };
+    document.body.appendChild(script);
+  </script>
+</body>
 </html>
