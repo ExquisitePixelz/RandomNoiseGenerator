@@ -56,9 +56,9 @@
   <script>
     var buildUrl = "Build";
     var config = {
-      dataUrl:            buildUrl + "/RandomNoiseGenerator.data",
-      frameworkUrl:       buildUrl + "/RandomNoiseGenerator.framework.js",
-      codeUrl:            buildUrl + "/RandomNoiseGenerator.wasm",
+      dataUrl:            buildUrl + "/RandomNoiseGenerator_webgl.data",
+      frameworkUrl:       buildUrl + "/RandomNoiseGenerator_webgl.framework.js",
+      codeUrl:            buildUrl + "/RandomNoiseGenerator_webgl.wasm",
       streamingAssetsUrl: "StreamingAssets",
       companyName:        "DefaultCompany",
       productName:        "RandomNoiseGenerator",
@@ -68,7 +68,7 @@
     var loadingBar  = document.querySelector("#unity-loading-bar");
     var progressBar = document.querySelector("#unity-progress-bar-full");
     var script      = document.createElement("script");
-    script.src      = buildUrl + "/RandomNoiseGenerator.loader.js";
+    script.src      = buildUrl + "/RandomNoiseGenerator_webgl.loader.js";
     script.onload   = function() {
       createUnityInstance(canvas, config, function(p) {
         progressBar.style.width = (100 * p) + "%";
